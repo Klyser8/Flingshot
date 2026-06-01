@@ -6,6 +6,7 @@
   "mixins": [
     "EntityMovementBlockMixin",
     "FireChargeItemMixin",
+    "ItemEntityGlimmerGooMixin",
     "ItemTooltipMixin",
     "ServerPlayerItemPickupMixin"
   ],

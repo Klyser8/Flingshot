@@ -47,11 +47,9 @@ public class GlimmerGooSplatBlock extends MultifaceBlock {
         return drops;
     }
 
-    @Override
-    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        super.stepOn(level, pos, state, entity);
+    public static void spawnStepParticles(Level level, Entity entity) {
         Vec3 velocity = entity.getDeltaMovement();
-        if (!level.isClientSide() || level.getGameTime() % 5L != 0L || (velocity.x == 0.0 && velocity.z == 0.0)) {
+        if (!level.isClientSide() || level.getGameTime() % 5L != 0L || velocity.horizontalDistanceSqr() < 1.0E-4) {
             return;
         }
 
@@ -66,13 +64,45 @@ public class GlimmerGooSplatBlock extends MultifaceBlock {
         );
     }
 
+    public static BlockPos findFloorSplat(Level level, Entity entity) {
+        BlockPos entityPos = entity.blockPosition();
+        BlockPos feetPos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY + 1.0E-3, entity.getZ());
+        BlockPos belowFeetPos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY - 1.0E-3, entity.getZ());
+        BlockPos onPos = entity.getOnPos();
+        BlockPos aboveOnPos = onPos.above();
+
+        if (isFloorSplat(level, entityPos)) {
+            return entityPos;
+        }
+        if (isFloorSplat(level, feetPos)) {
+            return feetPos;
+        }
+        if (isFloorSplat(level, belowFeetPos)) {
+            return belowFeetPos;
+        }
+        if (isFloorSplat(level, onPos)) {
+            return onPos;
+        }
+        if (isFloorSplat(level, aboveOnPos)) {
+            return aboveOnPos;
+        }
+
+        return null;
+    }
+
+    public static boolean isFloorSplat(BlockGetter level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        return state.getBlock() instanceof GlimmerGooSplatBlock && state.getValue(MultifaceBlock.getFaceProperty(Direction.DOWN));
+    }
+
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         for (Direction direction : availableFaces(state)) {
-            Vec3 particlePos = calculateParticlePos(direction, pos, random);
-            if (particlePos != null) {
-                level.addParticle(GREASE_CHUNK(), particlePos.x, particlePos.y, particlePos.z, 0.0, 0.0, 0.0);
+            if (direction == Direction.DOWN) {
+                continue;
             }
+            Vec3 particlePos = calculateParticlePos(direction, pos, random);
+            level.addParticle(GREASE_CHUNK(), particlePos.x, particlePos.y, particlePos.z, 0.0, 0.0, 0.0);
         }
     }
 
@@ -85,13 +115,14 @@ public class GlimmerGooSplatBlock extends MultifaceBlock {
     }
 
     private Vec3 calculateParticlePos(Direction direction, BlockPos pos, RandomSource random) {
+        Vec3 faceNormal = new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ());
         return switch (direction) {
-            case UP -> Vec3.atLowerCornerOf(pos).add(random.nextDouble(), 1.1, random.nextDouble());
-            case NORTH -> Vec3.atLowerCornerOf(pos).add(random.nextDouble(), random.nextDouble(), -0.1);
-            case EAST -> Vec3.atLowerCornerOf(pos).add(1.1, random.nextDouble(), random.nextDouble());
-            case SOUTH -> Vec3.atLowerCornerOf(pos).add(random.nextDouble(), random.nextDouble(), 1.1);
-            case WEST -> Vec3.atLowerCornerOf(pos).add(-0.1, random.nextDouble(), random.nextDouble());
-            case DOWN -> null;
+            case UP -> Vec3.atLowerCornerOf(pos).add(random.nextDouble(), 0.88, random.nextDouble()).add(faceNormal.scale(0.02));
+            case DOWN -> Vec3.atLowerCornerOf(pos).add(random.nextDouble(), 0.12, random.nextDouble()).add(faceNormal.scale(0.02));
+            case NORTH -> Vec3.atLowerCornerOf(pos).add(random.nextDouble(), random.nextDouble(), 0.12).add(faceNormal.scale(0.02));
+            case EAST -> Vec3.atLowerCornerOf(pos).add(0.88, random.nextDouble(), random.nextDouble()).add(faceNormal.scale(0.02));
+            case SOUTH -> Vec3.atLowerCornerOf(pos).add(random.nextDouble(), random.nextDouble(), 0.88).add(faceNormal.scale(0.02));
+            case WEST -> Vec3.atLowerCornerOf(pos).add(0.12, random.nextDouble(), random.nextDouble()).add(faceNormal.scale(0.02));
         };
     }
 }
