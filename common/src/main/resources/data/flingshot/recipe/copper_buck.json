@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "CFC",
+    " C "
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "F": "minecraft:flint"
+  },
+  "result": {
+    "id": "flingshot:copper_buck",
+    "count": 2
+  }
+}

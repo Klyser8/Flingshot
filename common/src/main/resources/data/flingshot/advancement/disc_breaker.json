@@ -1,0 +1,26 @@
+{
+  "parent": "flingshot:shoot_buck",
+  "criteria": {
+    "disc_breaker": {
+      "conditions": {},
+      "trigger": "flingshot:break_shield_with_obsidian_disc"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.flingshot.disc_breaker.desc"
+    },
+    "icon": {
+      "id": "flingshot:obsidian_disc"
+    },
+    "title": {
+      "translate": "advancement.flingshot.disc_breaker.title"
+    }
+  },
+  "requirements": [
+    [
+      "disc_breaker"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

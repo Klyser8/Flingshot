@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NSN",
+    "NGN",
+    "ISI"
+  ],
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "S": "minecraft:snowball",
+    "G": "minecraft:gunpowder",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "flingshot:frost_blast",
+    "count": 4
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "flingshot:item/flingshot/flingshot"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "flingshot:pull": 0.15
+      },
+      "model": "flingshot:item/flingshot_pulling_0"
+    },
+    {
+      "predicate": {
+        "flingshot:pull": 0.45
+      },
+      "model": "flingshot:item/flingshot_pulling_1"
+    },
+    {
+      "predicate": {
+        "flingshot:pull": 0.85
+      },
+      "model": "flingshot:item/flingshot_pulling_2"
+    }
+  ]
+}

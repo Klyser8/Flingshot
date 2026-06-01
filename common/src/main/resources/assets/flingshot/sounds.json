@@ -1,0 +1,7 @@
+{
+  "flingshot_shoot": {
+    "sounds": [
+      "flingshot:item/flingshot/flingshot_shoot"
+    ]
+  }
+}

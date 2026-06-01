@@ -1,0 +1,26 @@
+{
+  "parent": "flingshot:shoot_buck",
+  "criteria": {
+    "special_delivery": {
+      "conditions": {},
+      "trigger": "flingshot:flung_item_picked_up"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.flingshot.special_delivery.desc"
+    },
+    "icon": {
+      "id": "minecraft:bundle"
+    },
+    "title": {
+      "translate": "advancement.flingshot.special_delivery.title"
+    }
+  },
+  "requirements": [
+    [
+      "special_delivery"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

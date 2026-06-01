@@ -1,0 +1,39 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "license": "${license}",
+    "environment": "*",
+    "icon": "assets/flingshot/icon.png",
+    "entrypoints": {
+        "main": [
+            "com.tomrom.flingshot.Flingshot"
+        ],
+        "client": [
+            "com.tomrom.flingshot.client.FlingshotClient"
+        ],
+        "modmenu": [
+            "com.tomrom.flingshot.client.FlingshotModMenuIntegration"
+        ]
+    },
+    "accessWidener": "${mod_id}.accesswidener",
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "suggests": {
+        "modmenu": "*"
+    }
+}
+  

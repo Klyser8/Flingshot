@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " O ",
+    "OFO",
+    " O "
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "F": "minecraft:flint"
+  },
+  "result": {
+    "id": "flingshot:obsidian_disc",
+    "count": 8
+  }
+}

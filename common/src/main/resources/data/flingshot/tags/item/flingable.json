@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "flingshot:copper_buck",
+    "flingshot:frost_blast",
+    "flingshot:glimmer_goo",
+    "flingshot:obsidian_disc",
+    "flingshot:shimmer_shell"
+  ]
+}

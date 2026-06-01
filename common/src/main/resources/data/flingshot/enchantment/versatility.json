@@ -1,0 +1,23 @@
+{
+  "anvil_cost": 6,
+  "description": {
+    "translate": "enchantment.flingshot.versatility"
+  },
+  "effects": {},
+  "exclusive_set": "#flingshot:exclusive_set/automation",
+  "max_cost": {
+    "base": 50,
+    "per_level_above_first": 0
+  },
+  "max_level": 1,
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 0
+  },
+  "slots": [
+    "mainhand",
+    "offhand"
+  ],
+  "supported_items": "#flingshot:flingshots",
+  "weight": 1
+}

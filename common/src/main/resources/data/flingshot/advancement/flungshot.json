@@ -1,0 +1,30 @@
+{
+  "parent": "flingshot:shoot_buck",
+  "criteria": {
+    "fling_flingshot": {
+      "conditions": {},
+      "trigger": "flingshot:fling_flingshot"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.flingshot.shoot_flingshot_with_flingshot.desc"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "flingshot:flingshot"
+    },
+    "title": {
+      "translate": "advancement.flingshot.shoot_flingshot_with_flingshot.title"
+    }
+  },
+  "requirements": [
+    [
+      "fling_flingshot"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}

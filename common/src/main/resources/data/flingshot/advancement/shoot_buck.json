@@ -1,0 +1,26 @@
+{
+  "parent": "flingshot:root",
+  "criteria": {
+    "shoot_buck": {
+      "conditions": {},
+      "trigger": "flingshot:shoot_buck"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.flingshot.shoot_buck.desc"
+    },
+    "icon": {
+      "id": "flingshot:copper_buck"
+    },
+    "title": {
+      "translate": "advancement.flingshot.shoot_buck.title"
+    }
+  },
+  "requirements": [
+    [
+      "shoot_buck"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

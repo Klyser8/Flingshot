@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "crafted_flingshot": {
+      "conditions": {
+        "recipe_id": "flingshot:flingshot"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    }
+  },
+  "display": {
+    "background": "minecraft:block/copper_block",
+    "description": {
+      "translate": "advancement.flingshot.root.desc"
+    },
+    "icon": {
+      "id": "flingshot:flingshot"
+    },
+    "title": {
+      "translate": "advancement.flingshot.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "crafted_flingshot"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

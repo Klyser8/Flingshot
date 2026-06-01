@@ -1,0 +1,30 @@
+{
+  "parent": "flingshot:shoot_buck",
+  "criteria": {
+    "double_creeper": {
+      "conditions": {},
+      "trigger": "flingshot:stationary_shimmer_shell_double_creeper"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.flingshot.stationary_shimmer_shell_double_creeper.desc"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "flingshot:shimmer_shell"
+    },
+    "title": {
+      "translate": "advancement.flingshot.stationary_shimmer_shell_double_creeper.title"
+    }
+  },
+  "requirements": [
+    [
+      "double_creeper"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  },
+  "sends_telemetry_event": true
+}

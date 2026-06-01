@@ -1,0 +1,26 @@
+{
+  "parent": "flingshot:shoot_buck",
+  "criteria": {
+    "ceiling_glimmer_goo": {
+      "conditions": {},
+      "trigger": "flingshot:ceiling_glimmer_goo"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.flingshot.ceiling_glimmer_goo.desc"
+    },
+    "icon": {
+      "id": "flingshot:glimmer_goo"
+    },
+    "title": {
+      "translate": "advancement.flingshot.ceiling_glimmer_goo.title"
+    }
+  },
+  "requirements": [
+    [
+      "ceiling_glimmer_goo"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

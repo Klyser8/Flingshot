@@ -1,0 +1,26 @@
+{
+  "parent": "flingshot:shoot_buck",
+  "criteria": {
+    "light_nether_portal": {
+      "conditions": {},
+      "trigger": "flingshot:light_nether_portal"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.flingshot.remote_ignition.desc"
+    },
+    "icon": {
+      "id": "minecraft:fire_charge"
+    },
+    "title": {
+      "translate": "advancement.flingshot.remote_ignition.title"
+    }
+  },
+  "requirements": [
+    [
+      "light_nether_portal"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

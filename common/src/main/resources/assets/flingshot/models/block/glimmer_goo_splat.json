@@ -1,0 +1,23 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "flingshot:block/glimmer_goo_splat",
+    "glimmer_goo_splat": "flingshot:block/glimmer_goo_splat"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0.1],
+      "to": [16, 16, 0.1],
+      "faces": {
+        "north": {
+          "uv": [16, 0, 0, 16],
+          "texture": "#glimmer_goo_splat"
+        },
+        "south": {
+          "uv": [0, 0, 16, 16],
+          "texture": "#glimmer_goo_splat"
+        }
+      }
+    }
+  ]
+}

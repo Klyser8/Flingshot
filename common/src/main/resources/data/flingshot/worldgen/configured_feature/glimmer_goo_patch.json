@@ -1,0 +1,8 @@
+{
+  "type": "flingshot:glimmer_goo_patch",
+  "config": {
+    "min_blocks": 16,
+    "max_blocks": 40,
+    "search_range": 16
+  }
+}
