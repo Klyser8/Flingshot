@@ -43,6 +43,19 @@ loom {
     }
 }
 
+// Not completely sure why the jars don't get renamed similarly to how they do for other versions / for neoforge, but whatever this fixes it
+tasks.named('remapJar') {
+    archiveBaseName.set(mod_id)
+    archiveVersion.set("${version}+${project.name}-${minecraft_version}")
+    archiveClassifier.set('')
+}
+
+tasks.named('remapSourcesJar') {
+    archiveBaseName.set(mod_id)
+    archiveVersion.set("${version}+${project.name}-${minecraft_version}")
+    archiveClassifier.set('sources')
+}
+
 def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
 ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements', 'includeInternal', 'modCompileClasspath'].each { variant ->
     configurations.named("$variant") {
