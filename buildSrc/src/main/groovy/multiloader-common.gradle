@@ -4,7 +4,7 @@ plugins {
 }
 
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    archivesName = "${mod_id}"
 }
 
 java {
@@ -35,6 +35,10 @@ sourcesJar {
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_name}" }
     }
+}
+
+tasks.withType(Jar).configureEach {
+    archiveVersion = "${version}+${project.name}-${minecraft_version}"
 }
 
 jar {
