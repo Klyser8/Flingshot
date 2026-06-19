@@ -33,6 +33,8 @@
   "death.attack.shimmer_explosion": "%1$s è stato polverizzato",
   "death.attack.copper_buck.player": "%1$s è stato messo K.O. da %2$s",
   "death.attack.copper_buck": "%1$s è stato messo K.O.",
+  "death.attack.flingshot.buck": "%1$s è stato colpito da %2$s usando %3$s",
+  "death.attack.flingshot.buck.player": "%1$s è stato colpito dalla %3$s di %2$s usando %4$s",
 
   "enchantment.flingshot.force": "Forza",
   "enchantment.flingshot.force.desc": "Aumenta la distanza/velocità a cui vengono fiondati i proiettili da una Fiondola",

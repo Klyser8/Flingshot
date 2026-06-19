@@ -1,29 +1,51 @@
 package com.tomrom.flingshot.client.model;
 
-import com.tomrom.flingshot.client.renderer.BuckRenderState;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.tomrom.flingshot.entity.FrostBlast;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.RenderType;
 
-public class FrostBlastModel extends EntityModel<BuckRenderState> {
+public class FrostBlastModel extends EntityModel<FrostBlast> {
 
-	public FrostBlastModel(ModelPart root) {
-		super(root, RenderTypes::entityTranslucent);
-	}
+    private final ModelPart root;
 
-	public static LayerDefinition createBodyLayer() {
-		MeshDefinition meshdefinition = new MeshDefinition();
-		PartDefinition partdefinition = meshdefinition.getRoot();
+    public FrostBlastModel(ModelPart root) {
+        super(RenderType::entityTranslucent);
+        this.root = root;
+    }
 
-		PartDefinition bone = partdefinition.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, -0.7F, -1.5F, 3.0F, 2.0F, 3.0F, new CubeDeformation(0.0F))
-		.texOffs(9, 0).addBox(-0.5F, 1.3F, -0.5F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F))
-		.texOffs(6, 6).addBox(-1.0F, 0.8F, -1.0F, 2.0F, 1.0F, 2.0F, new CubeDeformation(0.0F))
-		.texOffs(0, 5).addBox(-1.0F, -1.7F, -1.0F, 2.0F, 1.0F, 2.0F, new CubeDeformation(0.0F))
-		.texOffs(0, 8).addBox(-0.5F, -2.7F, -0.5F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.2F, 0.0F, 0.0F, 0.0F, 0.0F, -1.5708F));
+    @Override
+    public void setupAnim(FrostBlast entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    }
 
-		return LayerDefinition.create(meshdefinition, 16, 16);
-	}
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshDefinition = new MeshDefinition();
+        PartDefinition root = meshDefinition.getRoot();
+
+        root.addOrReplaceChild(
+                "bone",
+                CubeListBuilder.create()
+                        .texOffs(0, 0).addBox(-1.5f, -0.7f, -1.5f, 3.0f, 2.0f, 3.0f, new CubeDeformation(0.0f))
+                        .texOffs(9, 0).addBox(-0.5f, 1.3f, -0.5f, 1.0f, 1.0f, 1.0f, new CubeDeformation(0.0f))
+                        .texOffs(6, 6).addBox(-1.0f, 0.8f, -1.0f, 2.0f, 1.0f, 2.0f, new CubeDeformation(0.0f))
+                        .texOffs(0, 5).addBox(-1.0f, -1.7f, -1.0f, 2.0f, 1.0f, 2.0f, new CubeDeformation(0.0f))
+                        .texOffs(0, 8).addBox(-0.5f, -2.7f, -0.5f, 1.0f, 1.0f, 1.0f, new CubeDeformation(0.0f)),
+                PartPose.offsetAndRotation(0.2f, 0.0f, 0.0f, 0.0f, 0.0f, -1.5708f)
+        );
+
+        return LayerDefinition.create(meshDefinition, 16, 16);
+    }
 }

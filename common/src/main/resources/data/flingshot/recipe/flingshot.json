@@ -6,10 +6,18 @@
     " C "
   ],
   "key": {
-    "C": "minecraft:copper_ingot",
-    "R": "minecraft:rabbit_hide",
-    "S": "minecraft:string",
-    "A": "minecraft:amethyst_shard"
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    }
   },
   "result": {
     "id": "flingshot:flingshot",

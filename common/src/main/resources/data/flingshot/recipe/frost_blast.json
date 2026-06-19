@@ -6,10 +6,18 @@
     "ISI"
   ],
   "key": {
-    "N": "minecraft:iron_nugget",
-    "S": "minecraft:snowball",
-    "G": "minecraft:gunpowder",
-    "I": "minecraft:iron_ingot"
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "S": {
+      "item": "minecraft:snowball"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
   },
   "result": {
     "id": "flingshot:frost_blast",

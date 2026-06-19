@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,9 +50,8 @@ public class FrostBlast extends AbstractBuck{
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity entityHit = result.getEntity();
-        DamageSource source = damageSources().explosion(this, getOwner());
         if (!level().isClientSide()) {
-            entityHit.hurtServer((ServerLevel) level(), source, (float) getBaseDamage());
+            entityHit.hurt(buckExplosionDamageSource(), (float) getRandomBaseDamage());
         }
         if (entityHit instanceof LivingEntity living) {
             living.setTicksFrozen(living.getTicksFrozen() + getFreezeDuration());
@@ -112,17 +110,16 @@ public class FrostBlast extends AbstractBuck{
                 continue;
             }
 
-            double dmg = Math.max(getBaseDamage() / distanceTo(entity), (float) (getBaseDamage() / getEyePosition().distanceTo(entity.getEyePosition())));
+            double dmg = Math.max(getRandomBaseDamage() / distanceTo(entity), (float) (getRandomBaseDamage() / getEyePosition().distanceTo(entity.getEyePosition())));
             int freezeDuration = (int) Math.max(getFreezeDuration() / distanceTo(entity), (getFreezeDuration() / getEyePosition().distanceTo(entity.getEyePosition())));
-            if (dmg > getBaseDamage()) {
-                dmg = getBaseDamage();
+            if (dmg > getRandomBaseDamage()) {
+                dmg = getRandomBaseDamage();
             }
             if (freezeDuration > getFreezeDuration()) {
                 freezeDuration = getFreezeDuration();
             }
 
-            DamageSource source = damageSources().explosion(this, getOwner());
-            entity.hurt(source, (float) dmg);
+            entity.hurt(buckExplosionDamageSource(), (float) dmg);
             System.out.println("Freeze duration for " + entity + " is " + freezeDuration);
             if (entity.getTicksFrozen() + freezeDuration <= MAX_FREEZE_TICKS) {
                 entity.setTicksFrozen(freezeDuration + entity.getTicksFrozen());
@@ -148,7 +145,7 @@ public class FrostBlast extends AbstractBuck{
         return entityData.get(FREEZE_DURATION);
     }
 
-    private double getBaseDamage() {
+    private double getRandomBaseDamage() {
         return baseDamage + random.nextDouble() * baseDamageMultiplier;
     }
 }

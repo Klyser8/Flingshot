@@ -7,8 +7,6 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -30,7 +28,7 @@ public class FabricRegistryHelper implements IRegistryHelper {
         T registered = Registry.register(
                 BuiltInRegistries.ITEM,
                 FlingshotConstants.id(name),
-                item.apply(properties.apply(new Item.Properties()).setId(ResourceKey.create(Registries.ITEM, FlingshotConstants.id(name))))
+                item.apply(properties.apply(new Item.Properties()))
         );
         return () -> registered;
     }
@@ -40,7 +38,7 @@ public class FabricRegistryHelper implements IRegistryHelper {
         T registered = Registry.register(
                 BuiltInRegistries.BLOCK,
                 FlingshotConstants.id(name),
-                block.apply(properties.apply(BlockBehaviour.Properties.of()).setId(ResourceKey.create(Registries.BLOCK, FlingshotConstants.id(name))))
+                block.apply(properties.apply(BlockBehaviour.Properties.of()))
         );
         return () -> registered;
     }

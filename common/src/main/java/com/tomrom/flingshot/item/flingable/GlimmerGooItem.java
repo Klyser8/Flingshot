@@ -6,11 +6,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.Level;
 
-import java.util.function.Consumer;
+import java.util.List;
 
 public class GlimmerGooItem extends BlockItem implements Flingable<GlimmerGoo> {
 
@@ -24,7 +23,7 @@ public class GlimmerGooItem extends BlockItem implements Flingable<GlimmerGoo> {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        FlingableTooltips.add(tooltip, "glimmer_goo", "damage", "places", "glows");
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        FlingableTooltips.add(tooltip::add, "glimmer_goo", "damage", "places", "glows");
     }
 }

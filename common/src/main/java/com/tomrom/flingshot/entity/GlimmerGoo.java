@@ -1,6 +1,8 @@
 package com.tomrom.flingshot.entity;
 
+import com.tomrom.flingshot.FlingshotConstants;
 import com.tomrom.flingshot.block.GlimmerGooSplatBlock;
+import com.tomrom.flingshot.platform.Services;
 import com.tomrom.flingshot.registry.FlingshotAdvancementTriggers;
 import com.tomrom.flingshot.registry.FlingshotBlocks;
 import com.tomrom.flingshot.registry.FlingshotEntities;
@@ -12,7 +14,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -44,10 +45,8 @@ public class GlimmerGoo extends AbstractBuck {
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         Entity hitEntity = hitResult.getEntity();
-        Entity owner = getOwner();
-        if (level() instanceof ServerLevel serverLevel) {
-            DamageSource source = damageSources().mobProjectile(this, owner instanceof LivingEntity livingOwner ? livingOwner : null);
-            hitEntity.hurtServer(serverLevel, source, (float) getFinalDamage(2.0 + getRandom().nextDouble() * 2.0));
+        if (level() instanceof ServerLevel) {
+            hitEntity.hurt(buckProjectileDamageSource(), (float) getFinalDamage(2.0 + getRandom().nextDouble() * 2.0));
         }
 
         if (hitEntity instanceof LivingEntity living) {
@@ -59,9 +58,13 @@ public class GlimmerGoo extends AbstractBuck {
     @Override
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
-        if (hitResult instanceof BlockHitResult blockHitResult) {
-            placeSplat(blockHitResult);
+        if (!(hitResult instanceof BlockHitResult blockHitResult)) {
+            return;
         }
+        if (hitResult.getType() != HitResult.Type.BLOCK) { // Guess in 1.21 I have to check whether the hit result is a block hit, or else air counts as a hit too? huh
+            return;
+        }
+        placeSplat(blockHitResult);
     }
 
     @Override
@@ -117,12 +120,28 @@ public class GlimmerGoo extends AbstractBuck {
 
         BlockPos placePos = hitResult.getBlockPos().relative(hitResult.getDirection());
         BlockState oldPlaceState = level.getBlockState(placePos);
-        GlimmerGooSplatBlock glimmerGooBlock = FlingshotBlocks.GLIMMER_GOO_SPLAT.get();
-        BlockState splatState = glimmerGooBlock.withFace(oldPlaceState, level, placePos, hitResult.getDirection().getOpposite());
+        GlimmerGooSplatBlock splatBlock = FlingshotBlocks.GLIMMER_GOO_SPLAT.get();
+        BlockState splatState = splatBlock.withFace(oldPlaceState, level, placePos, hitResult.getDirection().getOpposite());
 
         discard();
-        if (splatState == null || (!oldPlaceState.is(glimmerGooBlock) && !oldPlaceState.canBeReplaced() && !oldPlaceState.getFluidState().isSourceOfType(Fluids.WATER))) {
-            serverLevel.addFreshEntity(new ItemEntity(level, getX(), getY(), getZ(), getDefaultPickupItem()));
+        boolean canReplace = oldPlaceState.is(splatBlock) || oldPlaceState.canBeReplaced() || oldPlaceState.getFluidState().isSourceOfType(Fluids.WATER);
+        if (splatState == null || !canReplace) {
+            if (Services.PLATFORM.isDevelopmentEnvironment()) {
+                FlingshotConstants.LOG.warn(
+                        "Glimmer goo failed to place splat: hitBlock={}, hitDirection={}, placePos={}, oldPlaceState={}, splatState={}, canReplace={}, tickCount={}, owner={}",
+                        hitResult.getBlockPos(),
+                        hitResult.getDirection(),
+                        placePos,
+                        oldPlaceState,
+                        splatState,
+                        canReplace,
+                        tickCount,
+                        getOwner()
+                );
+            }
+            ItemEntity drop = new ItemEntity(level, getX(), getY(), getZ(), getDefaultPickupItem());
+            drop.setPickUpDelay(20);
+            serverLevel.addFreshEntity(drop);
             return;
         }
 

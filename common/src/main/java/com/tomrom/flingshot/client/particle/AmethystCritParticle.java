@@ -7,7 +7,6 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.util.RandomSource;
 
 public class AmethystCritParticle extends SimpleAnimatedParticle {
 
@@ -31,8 +30,8 @@ public class AmethystCritParticle extends SimpleAnimatedParticle {
     }
 
     @Override
-    public ParticleRenderType getGroup() {
-        return ParticleRenderType.SINGLE_QUADS;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     public static class Factory implements ParticleProvider<SimpleParticleType> {
@@ -44,8 +43,8 @@ public class AmethystCritParticle extends SimpleAnimatedParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-            return new AmethystCritParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, sprites);
+        public Particle createParticle(SimpleParticleType options, ClientLevel level, double x, double y, double z, double xAux, double yAux, double zAux) {
+            return new AmethystCritParticle(level, x, y, z, xAux, yAux, zAux, sprites);
         }
     }
 }

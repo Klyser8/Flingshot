@@ -32,6 +32,8 @@
   "death.attack.copper_buck": "%1$s was knocked out",
   "death.attack.copper_buck.player": "%1$s was knocked out by %2$s",
   "death.attack.copper_buck.item": "%1$s was knocked out by %2$s's %3$s",
+  "death.attack.flingshot.buck": "%1$s was struck by %2$s using %3$s",
+  "death.attack.flingshot.buck.player": "%1$s was struck by %2$s's %3$s using %4$s",
 
   "enchantment.flingshot.force": "Force",
   "enchantment.flingshot.force.desc": "Increases the speed/distance which shots are flung from the Flingshot",

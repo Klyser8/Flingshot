@@ -183,7 +183,8 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
             return false;
         }
 
-        if (!MultifaceBlock.canAttachTo(level, pos, face)) {
+        BlockPos supportPos = pos.relative(face);
+        if (!MultifaceBlock.canAttachTo(level, face, supportPos, level.getBlockState(supportPos))) {
             return false;
         }
 

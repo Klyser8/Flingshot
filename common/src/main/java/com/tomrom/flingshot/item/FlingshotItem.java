@@ -1,8 +1,10 @@
 package com.tomrom.flingshot.item;
 
+import com.tomrom.flingshot.FlingshotConstants;
 import com.tomrom.flingshot.config.FlingshotConfig;
 import com.tomrom.flingshot.entity.AbstractBuck;
 import com.tomrom.flingshot.item.flingable.Flingable;
+import com.tomrom.flingshot.platform.Services;
 import com.tomrom.flingshot.registry.FlingshotAdvancementTriggers;
 import com.tomrom.flingshot.registry.FlingshotEnchantments;
 import com.tomrom.flingshot.registry.FlingshotItems;
@@ -12,17 +14,18 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
-import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import com.tomrom.flingshot.registry.FlingshotTiers.FlingshotTier;
 
 import java.util.function.Predicate;
 
@@ -36,10 +39,11 @@ public class FlingshotItem extends Item {
     private static final float MIN_PULL_TO_SHOOT = 0.90f;
     private static final float BASE_VELOCITY = 1.25f;
     private static final float INACCURACY = 5.0f;
+    private static final double PROJECTILE_SPAWN_DISTANCE = 0.6;
 
-    private final ToolMaterial material;
+    private final FlingshotTier material;
 
-    public FlingshotItem(ToolMaterial material, Properties properties) {
+    public FlingshotItem(FlingshotTier material, Properties properties) {
         super(properties);
         this.material = material;
     }
@@ -53,11 +57,10 @@ public class FlingshotItem extends Item {
     }
 
     @Override
-    public boolean releaseUsing(ItemStack flingshot, Level level, LivingEntity user, int remainingUseTicks) {
-        if (hasAutomation(flingshot, user)) {
-            return false;
+    public void releaseUsing(ItemStack flingshot, Level level, LivingEntity user, int remainingUseTicks) {
+        if (!hasAutomation(flingshot, user)) {
+            handleFlingshotUse(flingshot, level, user, remainingUseTicks);
         }
-        return handleFlingshotUse(flingshot, level, user, remainingUseTicks);
     }
 
     @Override
@@ -103,29 +106,49 @@ public class FlingshotItem extends Item {
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack itemStack) {
-        return ItemUseAnimation.BOW;
+    public UseAnim getUseAnimation(ItemStack itemStack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack flingshot = player.getItemInHand(hand);
         if (getHeldProjectile(flingshot, player).isEmpty()) {
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(flingshot);
         }
 
         player.startUsingItem(hand);
-        return InteractionResult.CONSUME;
+        return InteractionResultHolder.consume(flingshot);
+    }
+
+    @Override
+    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
+        return repairCandidate.is(material.repairItems());
     }
 
     private void shootProjectile(ServerLevel level, Player shooter, ItemStack flingshot, ItemStack projectileStack, InteractionHand hand, float pull) {
         Item projectileItem = projectileStack.getItem();
         if (!(projectileItem instanceof Flingable<?> flingable)) {
+            if (Services.PLATFORM.isDevelopmentEnvironment() && projectileStack.is(FlingshotItems.GLIMMER_GOO.get())) {
+                FlingshotConstants.LOG.warn(
+                        "Glimmer goo was not treated as Flingable on {}. Item class: {}",
+                        Services.PLATFORM.getPlatformName(),
+                        projectileItem.getClass().getName()
+                );
+            }
             shootItemStack(level, shooter, flingshot, projectileStack, hand, pull);
             return;
         }
 
         Projectile projectile = flingable.flingshot$getFlingableEntity(level, shooter, projectileStack, flingshot);
+        if (Services.PLATFORM.isDevelopmentEnvironment() && projectileStack.is(FlingshotItems.GLIMMER_GOO.get())) {
+            FlingshotConstants.LOG.info(
+                    "Created glimmer goo projectile on {}. Projectile class: {}, entityType: {}",
+                    Services.PLATFORM.getPlatformName(),
+                    projectile.getClass().getName(),
+                    projectile.getType()
+            );
+        }
         if (projectile instanceof AbstractBuck buck) {
             buck.setPullFactor(pull);
         }
@@ -135,7 +158,7 @@ public class FlingshotItem extends Item {
         float velocity = calculateVelocity(level, flingshot, pull);
         float inaccuracy = calculateInaccuracy(level, flingshot);
 
-        projectile.setPos(eyePos.add(direction.scale(0.2)));
+        projectile.setPos(eyePos.add(direction.scale(PROJECTILE_SPAWN_DISTANCE)));
         projectile.setOwner(shooter);
         projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0.0f, velocity, inaccuracy);
         projectile.hurtMarked = true;
@@ -145,7 +168,7 @@ public class FlingshotItem extends Item {
         }
 
         projectileStack.consume(1, shooter);
-        flingshot.hurtAndBreak(1, shooter, hand);
+        flingshot.hurtAndBreak(1, shooter, equipmentSlot(hand));
     }
 
     private void shootItemStack(ServerLevel level, Player shooter, ItemStack flingshot, ItemStack projectileStack, InteractionHand hand, float pull) {
@@ -161,9 +184,9 @@ public class FlingshotItem extends Item {
         int count = shooter.isCrouching() ? projectileStack.getCount() : 1;
         ItemEntity itemEntity = new ItemEntity(
                 level,
-                eyePos.x + direction.x * 0.2,
-                eyePos.y + direction.y * 0.2,
-                eyePos.z + direction.z * 0.2,
+                eyePos.x + direction.x * PROJECTILE_SPAWN_DISTANCE,
+                eyePos.y + direction.y * PROJECTILE_SPAWN_DISTANCE,
+                eyePos.z + direction.z * PROJECTILE_SPAWN_DISTANCE,
                 projectileStack.copyWithCount(count),
                 movement.x,
                 movement.y,
@@ -178,7 +201,7 @@ public class FlingshotItem extends Item {
         }
 
         projectileStack.consume(count, shooter);
-        flingshot.hurtAndBreak(1, shooter, hand);
+        flingshot.hurtAndBreak(1, shooter, equipmentSlot(hand));
     }
 
     private float calculateVelocity(ServerLevel level, ItemStack flingshot, float pull) {
@@ -196,6 +219,10 @@ public class FlingshotItem extends Item {
 
     private static boolean hasAutomation(ItemStack flingshot, LivingEntity entity) {
         return FlingshotEnchantments.getLevel(entity.registryAccess(), FlingshotEnchantments.AUTOMATION, flingshot) > 0;
+    }
+
+    private static EquipmentSlot equipmentSlot(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
     }
 
     private static boolean hasVersatility(ItemStack flingshot, LivingEntity entity) {

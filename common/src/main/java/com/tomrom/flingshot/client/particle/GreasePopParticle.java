@@ -6,7 +6,6 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.util.RandomSource;
 
 public class GreasePopParticle extends SimpleAnimatedParticle {
 
@@ -31,8 +30,8 @@ public class GreasePopParticle extends SimpleAnimatedParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-            return new GreasePopParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, sprites);
+        public Particle createParticle(SimpleParticleType options, ClientLevel level, double x, double y, double z, double xAux, double yAux, double zAux) {
+            return new GreasePopParticle(level, x, y, z, xAux, yAux, zAux, sprites);
         }
     }
 }

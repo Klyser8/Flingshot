@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,12 +20,14 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -106,15 +107,14 @@ public class ShimmerShell extends AbstractBuck {
             boolean isHitEntity = entity.equals(hitEntity);
             float dmg = Math.max(getMaxExplosionDamage() / distanceTo(entity), (float) (getMaxExplosionDamage() / getEyePosition().distanceTo(entity.getEyePosition())));
             if (isHitEntity) {
-                dmg += (float) getBaseDamage();
+                dmg += (float) getRandomBaseDamage();
             }
-            if (dmg > getBaseDamage() + getMaxExplosionDamage()) {
-                dmg = (float) (getBaseDamage() + getMaxExplosionDamage());
+            if (dmg > getRandomBaseDamage() + getMaxExplosionDamage()) {
+                dmg = (float) (getRandomBaseDamage() + getMaxExplosionDamage());
             }
             if (!level().isClientSide()) {
-                DamageSource source = damageSources().explosion(this, getOwner());
                 boolean wasLivingCreeper = entity instanceof Creeper creeper && !creeper.isDeadOrDying();
-                entity.hurtServer((ServerLevel) level(), source, dmg);
+                entity.hurt(buckExplosionDamageSource(), dmg);
                 if (stationary && wasLivingCreeper && entity instanceof Creeper creeper && creeper.isDeadOrDying()) {
                     killedCreepers++;
                 }
@@ -122,9 +122,14 @@ public class ShimmerShell extends AbstractBuck {
         }
         if (!level().isClientSide()) {
             ServerLevel serverLevel = (ServerLevel) level();
+            gameEvent(GameEvent.EXPLODE);
             serverLevel.sendParticles(FlingshotParticles.AMETHYST_SHIMMER.get(),
                     getX(), getY(), getZ(), 50, 0, 0, 0, 0.1);
-            DustColorTransitionOptions effect = new DustColorTransitionOptions( 0xC95E01, 0xCCCCCC, 1.5f);
+            DustColorTransitionOptions effect = new DustColorTransitionOptions(
+                    new Vector3f(201.0f / 255.0f, 94.0f / 255.0f, 0.0f),
+                    new Vector3f(204.0f / 255.0f, 204.0f / 255.0f, 204.0f / 255.0f),
+                    1.5f
+            );
             serverLevel.sendParticles(effect,
                     getX(), getY() + 0.5, getZ(), 25, 0.5, 0.5, 0.5, 0);
             serverLevel.sendParticles(ParticleTypes.POOF,
@@ -146,7 +151,7 @@ public class ShimmerShell extends AbstractBuck {
             if (livingEntity.isDeadOrDying()) return false;
             if (livingEntity instanceof Player player && player.isSpectator()) return false;
             if (!livingEntity.hasLineOfSight(this)) return false;
-            // Prevent the owner from immediately triggering the explosion (they just fired it)
+            // Prevent the owner from immediately triggering the explosion if they just fried it
             if (getOwner() != null && getOwner().equals(livingEntity) && tickCount <= 2) return false;
             return true;
         });
@@ -155,7 +160,7 @@ public class ShimmerShell extends AbstractBuck {
             return; // exploded and discarded on server; avoid further behavior this tick
         }
 
-        // Explode automatically after 5 seconds (5s * 20tps = 100 ticks)
+        // Explode automatically after 5 seconds (100 ticks)
         if (tickCount >= 100) {
             explode(null);
             return;
@@ -191,7 +196,7 @@ public class ShimmerShell extends AbstractBuck {
         this.entityData.set(MAX_EXPLOSION_DAMAGE, damage);
     }
 
-    private double getBaseDamage() {
+    private double getRandomBaseDamage() {
         return baseDamage + random.nextDouble() * baseDamageMultiplier;
     }
 }

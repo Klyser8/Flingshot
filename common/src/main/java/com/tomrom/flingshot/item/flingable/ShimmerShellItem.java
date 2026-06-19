@@ -6,10 +6,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
-import java.util.function.Consumer;
+import java.util.List;
 
 public class ShimmerShellItem extends Item implements Flingable<ShimmerShell> {
 
@@ -23,7 +22,7 @@ public class ShimmerShellItem extends Item implements Flingable<ShimmerShell> {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        FlingableTooltips.add(tooltip, "shimmer_shell", "damage", "explodes");
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        FlingableTooltips.add(tooltip::add, "shimmer_shell", "damage", "explodes");
     }
 }

@@ -6,8 +6,12 @@
     " O "
   ],
   "key": {
-    "O": "minecraft:obsidian",
-    "F": "minecraft:flint"
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "F": {
+      "item": "minecraft:flint"
+    }
   },
   "result": {
     "id": "flingshot:obsidian_disc",

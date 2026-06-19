@@ -19,7 +19,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
-@EventBusSubscriber(modid = FlingshotConstants.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = FlingshotConstants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class FlingshotClient {
 
     @SubscribeEvent

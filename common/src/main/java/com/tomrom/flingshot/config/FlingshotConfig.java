@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.tomrom.flingshot.FlingshotConstants;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +26,7 @@ public class FlingshotConfig {
     private static final Path CONFIG_PATH = Path.of("config", FlingshotConstants.MOD_ID + ".json");
 
     private static ConfigData data = ConfigData.defaults();
-    private static Set<Identifier> versatilityItemBlacklist = Set.of();
+    private static Set<ResourceLocation> versatilityItemBlacklist = Set.of();
     private static List<TagKey<Item>> versatilityItemTagBlacklist = List.of();
 
     public static void init() {
@@ -109,7 +109,7 @@ public class FlingshotConfig {
             return false;
         }
 
-        Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (versatilityItemBlacklist.contains(itemId)) {
             return true;
         }
@@ -153,9 +153,9 @@ public class FlingshotConfig {
     }
 
     private static void cacheBlacklists() {
-        Set<Identifier> itemBlacklist = new HashSet<>();
+        Set<ResourceLocation> itemBlacklist = new HashSet<>();
         for (String itemId : data.gameplay.versatilityItemFlingingItemBlacklist) {
-            Identifier id = Identifier.tryParse(itemId);
+            ResourceLocation id = ResourceLocation.tryParse(itemId);
             if (id == null) {
                 FlingshotConstants.LOG.warn("Ignoring invalid Flingshot versatility item blacklist entry: {}", itemId);
                 continue;
@@ -166,7 +166,7 @@ public class FlingshotConfig {
         List<TagKey<Item>> tagBlacklist = new ArrayList<>();
         for (String tagId : data.gameplay.versatilityItemFlingingItemTagBlacklist) {
             String normalizedTagId = tagId.startsWith("#") ? tagId.substring(1) : tagId;
-            Identifier id = Identifier.tryParse(normalizedTagId);
+            ResourceLocation id = ResourceLocation.tryParse(normalizedTagId);
             if (id == null) {
                 FlingshotConstants.LOG.warn("Ignoring invalid Flingshot versatility item tag blacklist entry: {}", tagId);
                 continue;
@@ -208,7 +208,7 @@ public class FlingshotConfig {
 
     private static class Worldgen {
         private boolean enableGlimmerGooWorldgen = true;
-        private int glimmerGooPatchRarity = 12;
+        private int glimmerGooPatchRarity = 16;
         private int glimmerGooPatchMinBlocks = 12;
         private int glimmerGooPatchMaxBlocks = 36;
 

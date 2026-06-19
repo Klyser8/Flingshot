@@ -46,12 +46,12 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
 
     @Override
     public <T extends Item> Supplier<T> registerItem(String name, Function<Item.Properties, T> item, UnaryOperator<Item.Properties> properties) {
-        return ITEMS.registerItem(name, item, properties);
+        return ITEMS.registerItem(name, item, properties.apply(new Item.Properties()));
     }
 
     @Override
     public <T extends Block> Supplier<T> registerBlock(String name, Function<BlockBehaviour.Properties, T> block, UnaryOperator<BlockBehaviour.Properties> properties) {
-        return BLOCKS.registerBlock(name, block, properties);
+        return BLOCKS.registerBlock(name, block, properties.apply(BlockBehaviour.Properties.of()));
     }
 
     @Override

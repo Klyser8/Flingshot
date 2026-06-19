@@ -14,7 +14,7 @@ public abstract class ServerPlayerItemPickupMixin {
 
     @Inject(method = "onItemPickup", at = @At("TAIL"))
     private void flingshot$triggerFlungItemPickup(ItemEntity entity, CallbackInfo ci) {
-        if (entity.entityTags().contains(FlingshotItem.FLUNG_ITEM_TAG)) {
+        if (entity.removeTag(FlingshotItem.FLUNG_ITEM_TAG)) {
             FlingshotAdvancementTriggers.FLUNG_ITEM_PICKED_UP.get().trigger((ServerPlayer) (Object) this);
         }
     }

@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -51,7 +50,7 @@ public class ObsidianDisc extends AbstractBuck {
                     level().playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.SHIELD_BLOCK, living.getSoundSource(), 1.0f, 1.0f);
                     level().playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.SHIELD_BREAK, living.getSoundSource(), 1.0f, 1.0f);
                     if (living instanceof Player player) {
-                        player.getCooldowns().addCooldown(useItem, 100);
+                        player.getCooldowns().addCooldown(useItem.getItem(), 100);
                     }
                     if (owner instanceof ServerPlayer player) {
                         FlingshotAdvancementTriggers.BREAK_SHIELD_WITH_OBSIDIAN_DISC.get().trigger(player);
@@ -59,7 +58,6 @@ public class ObsidianDisc extends AbstractBuck {
                     return;
                 }
             }
-            DamageSource source = damageSources().mobProjectile(this, owner instanceof LivingEntity livingOwner ? livingOwner : null);
             double damage = (int) getFinalDamage(6.0 + getRandom().nextDouble() * 2.0);
             // Deals extra damage to entities with armor or armor toughness
             if (hitEntity instanceof LivingEntity living) {
@@ -72,7 +70,7 @@ public class ObsidianDisc extends AbstractBuck {
                 int totalProtection = getTotalProtectionLevel(living);
                 damage *=  1 + (1.0 * Math.min(armorValue / 20.0, 1) * Math.min(toughnessValue / 12.0, 1)) + 1 * Math.min(totalProtection / 16.0, 1);
             }
-            hitEntity.hurtServer(serverLevel, source, (float) getFinalDamage(damage));
+            hitEntity.hurt(buckProjectileDamageSource(), (float) getFinalDamage(damage));
         }
 
         breakDisc();
@@ -127,7 +125,7 @@ public class ObsidianDisc extends AbstractBuck {
         }
 
         Vec3 pos = position();
-        ItemParticleOption itemParticle = new ItemParticleOption(ParticleTypes.ITEM, FlingshotItems.OBSIDIAN_DISC.get());
+        ItemParticleOption itemParticle = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(FlingshotItems.OBSIDIAN_DISC.get()));
         serverLevel.sendParticles(itemParticle, pos.x, pos.y, pos.z, 25, 0.0, 0.0, 0.0, 0.1);
         discard();
     }

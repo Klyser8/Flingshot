@@ -8,10 +8,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -36,11 +36,9 @@ public class FireCharge extends AbstractBuck {
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         Entity hitEntity = hitResult.getEntity();
-        Entity owner = getOwner();
         hitEntity.setRemainingFireTicks(Math.max(FIRE_TICKS, hitEntity.getRemainingFireTicks()));
-        if (level() instanceof ServerLevel serverLevel) {
-            DamageSource source = damageSources().mobProjectile(this, owner instanceof LivingEntity livingOwner ? livingOwner : null);
-            hitEntity.hurtServer(serverLevel, source, (float) getFinalDamage(4.0 + getRandom().nextDouble() * 2.0));
+        if (level() instanceof ServerLevel) {
+            hitEntity.hurt(buckProjectileDamageSource(), (float) getFinalDamage(4.0 + getRandom().nextDouble() * 2.0));
         }
         discard();
     }
@@ -50,7 +48,7 @@ public class FireCharge extends AbstractBuck {
         super.onHitBlock(hitResult);
         if (level() instanceof ServerLevel serverLevel) {
             BlockPos firePos = hitResult.getBlockPos().relative(hitResult.getDirection());
-            if (serverLevel.mayInteract(this, firePos) && BaseFireBlock.canBePlacedAt(serverLevel, firePos, hitResult.getDirection())) {
+            if (canPlaceFire(serverLevel, firePos) && BaseFireBlock.canBePlacedAt(serverLevel, firePos, hitResult.getDirection())) {
                 serverLevel.setBlockAndUpdate(firePos, BaseFireBlock.getState(serverLevel, firePos));
                 if (serverLevel.getBlockState(firePos).is(Blocks.NETHER_PORTAL) && getOwner() instanceof ServerPlayer player) {
                     FlingshotAdvancementTriggers.LIGHT_NETHER_PORTAL.get().trigger(player);
@@ -94,5 +92,9 @@ public class FireCharge extends AbstractBuck {
     @Override
     protected ItemStack getDefaultPickupItem() {
         return new ItemStack(Items.FIRE_CHARGE);
+    }
+
+    private boolean canPlaceFire(ServerLevel level, BlockPos pos) {
+        return !(getOwner() instanceof Player player) || level.mayInteract(player, pos);
     }
 }

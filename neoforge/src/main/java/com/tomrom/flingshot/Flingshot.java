@@ -17,7 +17,7 @@ public class Flingshot {
 
         FlingshotConstants.LOG.info("Loading {} for NeoForge.", FlingshotConstants.MOD_NAME);
         NeoForgeRegistryHelper.register(eventBus);
-        if (FMLEnvironment.getDist() == Dist.CLIENT) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
             registerClientConfigScreen(modContainer);
         }
         FlingshotCommon.init();

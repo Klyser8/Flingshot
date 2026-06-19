@@ -5,16 +5,15 @@ import com.mojang.math.Axis;
 import com.tomrom.flingshot.FlingshotConstants;
 import com.tomrom.flingshot.client.model.ObsidianDiscModel;
 import com.tomrom.flingshot.entity.ObsidianDisc;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
-public class ObsidianDiscRenderer extends EntityRenderer<ObsidianDisc, BuckRenderState> {
+public class ObsidianDiscRenderer extends EntityRenderer<ObsidianDisc> {
 
-    private static final Identifier TEXTURE = FlingshotConstants.id("textures/entity/misc/obsidian_disc.png");
+    private static final ResourceLocation TEXTURE = FlingshotConstants.id("textures/entity/misc/obsidian_disc.png");
     private final ObsidianDiscModel model;
 
     public ObsidianDiscRenderer(EntityRendererProvider.Context context) {
@@ -23,40 +22,20 @@ public class ObsidianDiscRenderer extends EntityRenderer<ObsidianDisc, BuckRende
     }
 
     @Override
-    public void submit(BuckRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    public void render(ObsidianDisc entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0f));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot));
-        if (state.collisionAge == 0) {
-            poseStack.mulPose(Axis.YP.rotationDegrees((state.tickCount + state.partialTicks) * 60.0f));
+        poseStack.mulPose(Axis.YP.rotationDegrees(entity.getYRot() - 90.0f));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(entity.getXRot()));
+        if (entity.getCollisionAge() == 0) {
+            poseStack.mulPose(Axis.YP.rotationDegrees((entity.tickCount + partialTick) * 60.0f));
         }
-        submitNodeCollector.submitModel(
-                model,
-                state,
-                poseStack,
-                TEXTURE,
-                state.lightCoords,
-                OverlayTexture.NO_OVERLAY,
-                state.outlineColor,
-                null
-        );
+        model.renderToBuffer(poseStack, buffer.getBuffer(model.renderType(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
-        super.submit(state, poseStack, submitNodeCollector, camera);
+        super.render(entity, entityYaw, partialTick, poseStack, buffer, packedLight);
     }
 
     @Override
-    public BuckRenderState createRenderState() {
-        return new BuckRenderState();
-    }
-
-    @Override
-    public void extractRenderState(ObsidianDisc entity, BuckRenderState state, float partialTicks) {
-        super.extractRenderState(entity, state, partialTicks);
-        state.xRot = entity.getXRot(partialTicks);
-        state.yRot = entity.getYRot(partialTicks);
-        state.shake = entity.shakeTime - partialTicks;
-        state.tickCount = entity.tickCount;
-        state.collisionAge = entity.getCollisionAge();
-        state.partialTicks = partialTicks;
+    public ResourceLocation getTextureLocation(ObsidianDisc entity) {
+        return TEXTURE;
     }
 }

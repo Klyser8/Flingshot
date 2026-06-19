@@ -7,10 +7,10 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.util.RandomSource;
 
 public class AmethystShimmerParticle extends BaseAshSmokeParticle {
 
+    private static final int FULL_BRIGHT = 0xF000F0;
     private static final int MAX_AGE = 200;
 
     private final float deltaAlpha;
@@ -51,8 +51,13 @@ public class AmethystShimmerParticle extends BaseAshSmokeParticle {
     }
 
     @Override
-    public ParticleRenderType getGroup() {
-        return ParticleRenderType.SINGLE_QUADS;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    }
+
+    @Override
+    protected int getLightColor(float partialTick) {
+        return FULL_BRIGHT;
     }
 
     private static float clamp(float value, float min, float max) {
@@ -68,8 +73,8 @@ public class AmethystShimmerParticle extends BaseAshSmokeParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-            return new AmethystShimmerParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, 1.0f, sprites);
+        public Particle createParticle(SimpleParticleType options, ClientLevel level, double x, double y, double z, double xAux, double yAux, double zAux) {
+            return new AmethystShimmerParticle(level, x, y, z, xAux, yAux, zAux, 1.0f, sprites);
         }
     }
 }

@@ -5,53 +5,37 @@ import com.tomrom.flingshot.client.model.GenericBuckModel;
 import com.tomrom.flingshot.entity.CopperBuck;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.ArrowRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
-public class CopperBuckRenderer extends EntityRenderer<CopperBuck, ArrowRenderState> {
+public class CopperBuckRenderer extends EntityRenderer<CopperBuck> {
 
-    private static final Identifier TEXTURE = FlingshotConstants.id("textures/entity/misc/copper_buck.png");
-    private final GenericBuckModel model;
+    private static final ResourceLocation TEXTURE = FlingshotConstants.id("textures/entity/misc/copper_buck.png");
+    private final GenericBuckModel<CopperBuck> model;
 
     public CopperBuckRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.model = new GenericBuckModel(GenericBuckModel.createBodyLayer().bakeRoot());
+        this.model = new GenericBuckModel<>(GenericBuckModel.createBodyLayer().bakeRoot());
     }
 
     @Override
-    public void submit(ArrowRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    public void render(CopperBuck entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0f));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot));
-        submitNodeCollector.submitModel(
-                model,
-                state,
-                poseStack,
-                TEXTURE,
-                state.lightCoords,
-                OverlayTexture.NO_OVERLAY,
-                state.outlineColor,
-                null
-        );
+        poseStack.mulPose(Axis.YP.rotationDegrees(entity.getYRot() - 90.0f));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(entity.getXRot()));
+        if (entity.getCollisionAge() == 0) {
+            poseStack.mulPose(Axis.XP.rotationDegrees((entity.tickCount + partialTick) * 50.0f));
+        }
+        model.renderToBuffer(poseStack, buffer.getBuffer(model.renderType(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
-        super.submit(state, poseStack, submitNodeCollector, camera);
+        super.render(entity, entityYaw, partialTick, poseStack, buffer, packedLight);
     }
 
     @Override
-    public ArrowRenderState createRenderState() {
-        return new ArrowRenderState();
-    }
-
-    @Override
-    public void extractRenderState(CopperBuck entity, ArrowRenderState state, float partialTicks) {
-        super.extractRenderState(entity, state, partialTicks);
-        state.xRot = entity.getXRot(partialTicks);
-        state.yRot = entity.getYRot(partialTicks);
-        state.shake = entity.shakeTime - partialTicks;
+    public ResourceLocation getTextureLocation(CopperBuck entity) {
+        return TEXTURE;
     }
 }

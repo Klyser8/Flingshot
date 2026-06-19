@@ -7,10 +7,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class FlingshotCreativeTabs {
 
     private static void addEnchantedBook(CreativeModeTab.ItemDisplayParameters parameters, CreativeModeTab.Output output, ResourceKey<Enchantment> enchantment, int level) {
         Holder<Enchantment> holder = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(enchantment);
-        ItemStack book = EnchantmentHelper.createBook(new EnchantmentInstance(holder, level));
+        ItemStack book = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(holder, level));
         output.accept(book);
     }
 

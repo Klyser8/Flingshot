@@ -1,5 +1,6 @@
 package com.tomrom.flingshot.block;
 
+import com.mojang.serialization.MapCodec;
 import com.tomrom.flingshot.registry.FlingshotParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -10,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.MultifaceBlock;
+import net.minecraft.world.level.block.MultifaceSpreader;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -20,8 +22,16 @@ import java.util.function.ToIntFunction;
 
 public class GlimmerGooSplatBlock extends MultifaceBlock {
 
+    public static final MapCodec<GlimmerGooSplatBlock> CODEC = simpleCodec(GlimmerGooSplatBlock::new);
+    private final MultifaceSpreader spreader = new MultifaceSpreader(this);
+
     public GlimmerGooSplatBlock(BlockBehaviour.Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected MapCodec<GlimmerGooSplatBlock> codec() {
+        return CODEC;
     }
 
     public static ToIntFunction<BlockState> emission(int lightLevel) {
@@ -29,8 +39,13 @@ public class GlimmerGooSplatBlock extends MultifaceBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state) {
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return state.getFluidState().isEmpty();
+    }
+
+    @Override
+    public MultifaceSpreader getSpreader() {
+        return spreader;
     }
 
     @Override
@@ -49,7 +64,7 @@ public class GlimmerGooSplatBlock extends MultifaceBlock {
 
     public static void spawnStepParticles(Level level, Entity entity) {
         Vec3 velocity = entity.getDeltaMovement();
-        if (!level.isClientSide() || level.getGameTime() % 5L != 0L || velocity.horizontalDistanceSqr() < 1.0E-4) {
+        if (!level.isClientSide() || level.getGameTime() % 5L != 0L || velocity.horizontalDistanceSqr() < 0.0001) {
             return;
         }
 
@@ -66,8 +81,8 @@ public class GlimmerGooSplatBlock extends MultifaceBlock {
 
     public static BlockPos findFloorSplat(Level level, Entity entity) {
         BlockPos entityPos = entity.blockPosition();
-        BlockPos feetPos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY + 1.0E-3, entity.getZ());
-        BlockPos belowFeetPos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY - 1.0E-3, entity.getZ());
+        BlockPos feetPos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY + 0.0001, entity.getZ());
+        BlockPos belowFeetPos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY - 0.0001, entity.getZ());
         BlockPos onPos = entity.getOnPos();
         BlockPos aboveOnPos = onPos.above();
 

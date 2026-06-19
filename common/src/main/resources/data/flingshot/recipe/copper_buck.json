@@ -6,8 +6,12 @@
     " C "
   ],
   "key": {
-    "C": "minecraft:copper_ingot",
-    "F": "minecraft:flint"
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "F": {
+      "item": "minecraft:flint"
+    }
   },
   "result": {
     "id": "flingshot:copper_buck",

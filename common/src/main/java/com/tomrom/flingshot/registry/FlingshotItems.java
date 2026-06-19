@@ -19,8 +19,6 @@ public class FlingshotItems {
             properties -> new FlingshotItem(FlingshotTiers.COPPER, properties),
             properties -> properties.stacksTo(1)
                     .durability((int) (FlingshotTiers.COPPER.durability() * 1.5))
-                    .repairable(FlingshotTiers.COPPER.repairItems())
-                    .enchantable(FlingshotTiers.COPPER.enchantmentValue())
     );
 
     // Basic buck that does 7-10 damage.

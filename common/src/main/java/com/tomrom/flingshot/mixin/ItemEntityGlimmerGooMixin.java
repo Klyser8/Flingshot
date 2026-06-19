@@ -20,7 +20,7 @@ public class ItemEntityGlimmerGooMixin {
         }
 
         Vec3 movement = entity.getDeltaMovement();
-        if (movement.horizontalDistanceSqr() < 1.0E-6) {
+        if (movement.horizontalDistanceSqr() < 0.0001) {
             return;
         }
 

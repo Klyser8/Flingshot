@@ -6,9 +6,15 @@
     "CAC"
   ],
   "key": {
-    "G": "minecraft:gunpowder",
-    "C": "minecraft:copper_ingot",
-    "A": "minecraft:amethyst_shard"
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    }
   },
   "result": {
     "id": "flingshot:shimmer_shell",

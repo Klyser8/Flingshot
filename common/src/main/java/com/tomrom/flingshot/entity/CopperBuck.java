@@ -5,12 +5,9 @@ import com.tomrom.flingshot.registry.FlingshotDamageTypes;
 import com.tomrom.flingshot.registry.FlingshotEntities;
 import com.tomrom.flingshot.registry.FlingshotItems;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,14 +30,8 @@ public class CopperBuck extends AbstractBuck {
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         Entity hitEntity = hitResult.getEntity();
-        Entity owner = getOwner();
-        if (level() instanceof ServerLevel serverLevel) {
-            DamageSource source = new DamageSource(
-                    registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(FlingshotDamageTypes.COPPER_BUCK),
-                    this,
-                    owner == null ? this : owner
-            );
-            hitEntity.hurtServer(serverLevel, source, (float) getFinalDamage(7.0 + getRandom().nextDouble() * 3.0));
+        if (level() instanceof ServerLevel) {
+            hitEntity.hurt(buckDamageSource(FlingshotDamageTypes.COPPER_BUCK), (float) getFinalDamage(7.0 + getRandom().nextDouble() * 3.0));
         }
         setDeltaMovement(getDeltaMovement().reverse().scale(0.1));
         pickup = Pickup.CREATIVE_ONLY;
