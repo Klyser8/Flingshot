@@ -5,6 +5,7 @@ import com.tomrom.flingshot.block.GlimmerGooSplatBlock;
 import com.tomrom.flingshot.config.FlingshotConfig;
 import com.tomrom.flingshot.registry.FlingshotBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
@@ -43,7 +44,8 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
 
         GlimmerGooPatchConfiguration config = context.config();
         GlimmerGooSplatBlock gooBlock = FlingshotBlocks.GLIMMER_GOO_SPLAT.get();
-        SurfaceAnchor anchor = findSurface(level, context.origin(), random, gooBlock, config.searchRange());
+        ChunkBounds safeBounds = ChunkBounds.around(context.origin(), 1);
+        SurfaceAnchor anchor = findSurface(level, context.origin(), random, gooBlock, config.searchRange(), safeBounds);
 
         if (anchor == null) {
             return false;
@@ -68,7 +70,7 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
         while (!frontier.isEmpty() && placedPositions.size() < targetBlocks) {
             int frontierIndex = random.nextInt(frontier.size());
             SurfaceAnchor current = frontier.get(frontierIndex);
-            List<SurfaceAnchor> candidates = adjacentSurfaces(level, current, anchor.pos(), gooBlock, visited, maxDistance);
+            List<SurfaceAnchor> candidates = adjacentSurfaces(level, current, anchor.pos(), gooBlock, visited, maxDistance, safeBounds);
 
             if (candidates.isEmpty()) {
                 frontier.remove(frontierIndex);
@@ -87,8 +89,8 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
         return !placedPositions.isEmpty();
     }
 
-    private static SurfaceAnchor findSurface(WorldGenLevel level, BlockPos origin, RandomSource random, GlimmerGooSplatBlock gooBlock, int searchRange) {
-        SurfaceAnchor anchor = findSurfaceAt(level, origin, random, gooBlock);
+    private static SurfaceAnchor findSurface(WorldGenLevel level, BlockPos origin, RandomSource random, GlimmerGooSplatBlock gooBlock, int searchRange, ChunkBounds safeBounds) {
+        SurfaceAnchor anchor = findSurfaceAt(level, origin, random, gooBlock, safeBounds);
 
         if (anchor != null) {
             return anchor;
@@ -101,7 +103,7 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
                     random.nextInt(searchRange * 2 + 1) - searchRange,
                     random.nextInt(searchRange * 2 + 1) - searchRange
             );
-            anchor = findSurfaceAt(level, pos, random, gooBlock);
+            anchor = findSurfaceAt(level, pos, random, gooBlock, safeBounds);
 
             if (anchor != null) {
                 return anchor;
@@ -111,11 +113,11 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
         return null;
     }
 
-    private static SurfaceAnchor findSurfaceAt(WorldGenLevel level, BlockPos pos, RandomSource random, GlimmerGooSplatBlock gooBlock) {
+    private static SurfaceAnchor findSurfaceAt(WorldGenLevel level, BlockPos pos, RandomSource random, GlimmerGooSplatBlock gooBlock, ChunkBounds safeBounds) {
         List<Direction> faces = new ArrayList<>();
 
         for (Direction face : Direction.values()) {
-            if (canPlaceFace(level, pos, face, gooBlock)) {
+            if (safeBounds.contains(pos) && safeBounds.contains(pos.relative(face)) && canPlaceFace(level, pos, face, gooBlock)) {
                 faces.add(face);
             }
         }
@@ -138,17 +140,17 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
         return newState != null && level.setBlock(pos, newState, PLACEMENT_FLAGS);
     }
 
-    private static List<SurfaceAnchor> adjacentSurfaces(WorldGenLevel level, SurfaceAnchor current, BlockPos origin, GlimmerGooSplatBlock gooBlock, Set<SurfaceAnchor> visited, int maxDistance) {
+    private static List<SurfaceAnchor> adjacentSurfaces(WorldGenLevel level, SurfaceAnchor current, BlockPos origin, GlimmerGooSplatBlock gooBlock, Set<SurfaceAnchor> visited, int maxDistance, ChunkBounds safeBounds) {
         List<SurfaceAnchor> candidates = new ArrayList<>();
 
         for (Direction face : Direction.values()) {
-            addSurfaceCandidate(level, candidates, visited, origin, current.pos(), face, gooBlock, maxDistance);
+            addSurfaceCandidate(level, candidates, visited, origin, current.pos(), face, gooBlock, maxDistance, safeBounds);
         }
 
         for (Direction moveDirection : Direction.values()) {
             BlockPos neighborPos = current.pos().relative(moveDirection);
             for (Direction face : Direction.values()) {
-                addSurfaceCandidate(level, candidates, visited, origin, neighborPos, face, gooBlock, maxDistance);
+                addSurfaceCandidate(level, candidates, visited, origin, neighborPos, face, gooBlock, maxDistance, safeBounds);
             }
         }
 
@@ -163,11 +165,16 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
             BlockPos pos,
             Direction face,
             GlimmerGooSplatBlock gooBlock,
-            int maxDistance
+            int maxDistance,
+            ChunkBounds safeBounds
     ) {
         SurfaceAnchor candidate = new SurfaceAnchor(pos, face);
 
-        if (!visited.contains(candidate) && withinDistance(origin, pos, maxDistance) && canPlaceFace(level, pos, face, gooBlock)) {
+        if (!visited.contains(candidate)
+                && safeBounds.contains(pos)
+                && safeBounds.contains(pos.relative(face))
+                && withinDistance(origin, pos, maxDistance)
+                && canPlaceFace(level, pos, face, gooBlock)) {
             candidates.add(candidate);
         }
     }
@@ -203,5 +210,20 @@ public class GlimmerGooPatchFeature extends Feature<GlimmerGooPatchConfiguration
     }
 
     private record SurfaceAnchor(BlockPos pos, Direction face) {
+    }
+
+    private record ChunkBounds(int minChunkX, int maxChunkX, int minChunkZ, int maxChunkZ) {
+
+        private static ChunkBounds around(BlockPos origin, int radius) {
+            int chunkX = SectionPos.blockToSectionCoord(origin.getX());
+            int chunkZ = SectionPos.blockToSectionCoord(origin.getZ());
+            return new ChunkBounds(chunkX - radius, chunkX + radius, chunkZ - radius, chunkZ + radius);
+        }
+
+        private boolean contains(BlockPos pos) {
+            int chunkX = SectionPos.blockToSectionCoord(pos.getX());
+            int chunkZ = SectionPos.blockToSectionCoord(pos.getZ());
+            return chunkX >= minChunkX && chunkX <= maxChunkX && chunkZ >= minChunkZ && chunkZ <= maxChunkZ;
+        }
     }
 }

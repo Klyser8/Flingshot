@@ -208,7 +208,7 @@ public class FlingshotConfig {
 
     private static class Worldgen {
         private boolean enableGlimmerGooWorldgen = true;
-        private int glimmerGooPatchRarity = 16;
+        private int glimmerGooPatchRarity = 12;
         private int glimmerGooPatchMinBlocks = 12;
         private int glimmerGooPatchMaxBlocks = 36;
 
