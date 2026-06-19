@@ -2,8 +2,8 @@ package com.tomrom.flingshot.platform;
 
 import com.tomrom.flingshot.FlingshotConstants;
 import com.tomrom.flingshot.platform.services.IRegistryHelper;
-import net.minecraft.advancements.CriterionTrigger;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;

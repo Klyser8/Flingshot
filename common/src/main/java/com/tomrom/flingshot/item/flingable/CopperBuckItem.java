@@ -26,4 +26,6 @@ public class CopperBuckItem extends Item implements Flingable<CopperBuck> {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         FlingableTooltips.add(tooltip, "copper_buck", "damage");
     }
+
+
 }

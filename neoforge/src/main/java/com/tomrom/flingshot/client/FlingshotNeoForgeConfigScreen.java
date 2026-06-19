@@ -94,7 +94,7 @@ public class FlingshotNeoForgeConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(parent);
+        minecraft.setScreenAndShow(parent);
     }
 
     private CycleButton<Boolean> addToggle(int labelX, int fieldX, int y, String key, boolean value) {

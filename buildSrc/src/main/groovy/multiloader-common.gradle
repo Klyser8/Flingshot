@@ -4,11 +4,13 @@ plugins {
 }
 
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    archivesName = "${mod_id}"
 }
 
+def requestedJavaVersion = JavaLanguageVersion.of(java_version)
+
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    toolchain.languageVersion = requestedJavaVersion
     withSourcesJar()
     withJavadocJar()
 }
@@ -37,6 +39,10 @@ sourcesJar {
     }
 }
 
+tasks.withType(Jar).configureEach {
+    archiveVersion = "${version}+${project.name}-${minecraft_version}"
+}
+
 jar {
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_name}" }
@@ -46,9 +52,9 @@ jar {
         attributes([
                 'Specification-Title'   : mod_name,
                 'Specification-Vendor'  : mod_author,
-                'Specification-Version' : project.jar.archiveVersion,
+                'Specification-Version' : version,
                 'Implementation-Title'  : project.name,
-                'Implementation-Version': project.jar.archiveVersion,
+                'Implementation-Version': version,
                 'Implementation-Vendor' : mod_author,
                 'Built-On-Minecraft'    : minecraft_version
         ])
@@ -58,7 +64,7 @@ jar {
 processResources {
     var expandProps = [
             'version'                      : version,
-            'group'                        : project.group, //Else we target the task's group.
+            'group'                        : project.group,
             'minecraft_version'            : minecraft_version,
             'minecraft_version_range'      : minecraft_version_range,
             'fabric_version'               : fabric_version,

@@ -85,7 +85,7 @@ public class FlingshotModMenuConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(parent);
+        minecraft.setScreenAndShow(parent); //Used to be setScreen in 26.1.2 and below, I think?
     }
 
     private CycleButton<Boolean> addToggle(int labelX, int fieldX, int y, String key, boolean value) {

@@ -31,7 +31,7 @@ public class GenericBuckModel extends EntityModel<ArrowRenderState> {
                         .texOffs(7, 7).addBox(1.0f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, new CubeDeformation(0.0f))
                         .texOffs(0, 8).addBox(-0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, new CubeDeformation(0.0f))
                         .texOffs(4, 6).addBox(-0.5f, -2.0f, -0.5f, 1.0f, 1.0f, 1.0f, new CubeDeformation(0.0f)),
-                PartPose.offset(0.0f, 1.5f, 0.0f)
+                PartPose.ZERO
         );
 
         return LayerDefinition.create(meshDefinition, 16, 16);
