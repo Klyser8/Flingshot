@@ -4,6 +4,7 @@ import com.tomrom.flingshot.client.particle.AmethystCritParticle;
 import com.tomrom.flingshot.client.particle.AmethystShimmerParticle;
 import com.tomrom.flingshot.client.particle.GreaseChunkParticle;
 import com.tomrom.flingshot.client.particle.GreasePopParticle;
+import com.tomrom.flingshot.client.FlingshotItemProperties;
 import com.tomrom.flingshot.client.renderer.CopperBuckRenderer;
 import com.tomrom.flingshot.client.renderer.FireChargeRenderer;
 import com.tomrom.flingshot.client.renderer.FrostBlastRenderer;
@@ -23,6 +24,8 @@ public class FlingshotClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        FlingshotItemProperties.register();
+
         EntityRendererRegistry.register(FlingshotEntities.COPPER_BUCK.get(), CopperBuckRenderer::new);
         EntityRendererRegistry.register(FlingshotEntities.OBSIDIAN_DISC.get(), ObsidianDiscRenderer::new);
         EntityRendererRegistry.register(FlingshotEntities.SHIMMER_SHELL.get(), ShimmerShellRenderer::new);

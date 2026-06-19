@@ -5,6 +5,7 @@ import com.tomrom.flingshot.client.particle.AmethystCritParticle;
 import com.tomrom.flingshot.client.particle.AmethystShimmerParticle;
 import com.tomrom.flingshot.client.particle.GreaseChunkParticle;
 import com.tomrom.flingshot.client.particle.GreasePopParticle;
+import com.tomrom.flingshot.client.FlingshotItemProperties;
 import com.tomrom.flingshot.client.renderer.CopperBuckRenderer;
 import com.tomrom.flingshot.client.renderer.FireChargeRenderer;
 import com.tomrom.flingshot.client.renderer.FrostBlastRenderer;
@@ -15,12 +16,18 @@ import com.tomrom.flingshot.registry.FlingshotEntities;
 import com.tomrom.flingshot.registry.FlingshotParticles;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 @EventBusSubscriber(modid = FlingshotConstants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class FlingshotClient {
+
+    @SubscribeEvent
+    private static void clientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(FlingshotItemProperties::register);
+    }
 
     @SubscribeEvent
     private static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
